@@ -174,39 +174,102 @@ class _AdditionalSignUpCardState extends State<_AdditionalSignUpCard>
     }
   }
 
+  // Widget _buildFields(double width) {
+  //   return Column(
+  //     children: widget.formFields.map((UserFormField formField) {
+  //       final controller = _nameControllers[formField.keyName];
+  //       Widget fieldWidget;
+
+  //       return Column(
+  //         children: [
+  //           const SizedBox(
+  //             height: 10,
+  //           ),
+  //           AnimatedTextFormField(
+  //             userType: formField.userType,
+  //             controller: _nameControllers[formField.keyName],
+  //             // interval: _fieldAnimationIntervals[widget.formFields.indexOf(formField)],
+  //             loadingController: widget.loadingController,
+  //             width: width,
+  //             labelText: formField.displayName,
+  //             prefixIcon: formField.icon ??
+  //                 const Icon(FontAwesomeIcons.solidCircleUser),
+  //             keyboardType: getKeyboardType(formField.userType),
+  //             autofillHints: [
+  //               getAutofillHints(formField.userType),
+  //             ],
+  //             textInputAction:
+  //                 formField.keyName == widget.formFields.last.keyName
+  //                     ? TextInputAction.done
+  //                     : TextInputAction.next,
+  //             validator: formField.fieldValidator,
+  //             tooltip: formField.tooltip,
+
+  //             initialIsoCode: widget.initialIsoCode,
+  //           ),
+  //           const SizedBox(
+  //             height: 5,
+  //           ),
+  //         ],
+  //       );
+  //     }).toList(),
+  //   );
+  // }
   Widget _buildFields(double width) {
     return Column(
       children: widget.formFields.map((UserFormField formField) {
+        final controller = _nameControllers[formField.keyName]!;
+
+        Widget fieldWidget;
+
+        if (formField.fieldType == CustomFieldType.dropdown &&
+            formField.dropdownItems != null) {
+          fieldWidget = DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              labelText: formField.displayName,
+              icon: formField.icon ?? const Icon(Icons.list),
+            ),
+            value: controller.text.isNotEmpty
+                ? controller.text
+                : formField.dropdownItems!.first,
+            onChanged: (value) {
+              if (value != null) {
+                setState(() => controller.text = value);
+              }
+            },
+            items: formField.dropdownItems!
+                .map((item) => DropdownMenuItem(
+                      value: item,
+                      child: Text(item),
+                    ))
+                .toList(),
+            validator: formField.fieldValidator,
+          );
+        } else {
+          fieldWidget = AnimatedTextFormField(
+            userType: formField.userType,
+            controller: controller,
+            loadingController: widget.loadingController,
+            width: width,
+            labelText: formField.displayName,
+            prefixIcon:
+                formField.icon ?? const Icon(FontAwesomeIcons.solidCircleUser),
+            keyboardType: getKeyboardType(formField.userType),
+            autofillHints: [getAutofillHints(formField.userType)],
+            textInputAction: formField.keyName == widget.formFields.last.keyName
+                ? TextInputAction.done
+                : TextInputAction.next,
+            validator: formField.fieldValidator,
+            tooltip: formField.tooltip,
+            initialIsoCode: widget.initialIsoCode,
+          );
+        }
+
         return Column(
           children: [
-            const SizedBox(
-              height: 10,
-            ),
-            AnimatedTextFormField(
-              userType: formField.userType,
-              controller: _nameControllers[formField.keyName],
-              // interval: _fieldAnimationIntervals[widget.formFields.indexOf(formField)],
-              loadingController: widget.loadingController,
-              width: width,
-              labelText: formField.displayName,
-              prefixIcon: formField.icon ??
-                  const Icon(FontAwesomeIcons.solidCircleUser),
-              keyboardType: getKeyboardType(formField.userType),
-              autofillHints: [
-                getAutofillHints(formField.userType),
-              ],
-              textInputAction:
-                  formField.keyName == widget.formFields.last.keyName
-                      ? TextInputAction.done
-                      : TextInputAction.next,
-              validator: formField.fieldValidator,
-              tooltip: formField.tooltip,
-
-              initialIsoCode: widget.initialIsoCode,
-            ),
-            const SizedBox(
-              height: 5,
-            ),
+            const SizedBox(height: 10),
+            fieldWidget,
+            const SizedBox(height: 5),
           ],
         );
       }).toList(),

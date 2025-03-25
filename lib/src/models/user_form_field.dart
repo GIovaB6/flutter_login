@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_login/src/models/login_user_type.dart';
 
+enum CustomFieldType {
+  text,
+  dropdown,
+}
+
 class UserFormField {
   /// The name of the field retrieved as key.
   /// Please ensure this is unique, otherwise an Error will be thrown
@@ -26,6 +31,8 @@ class UserFormField {
   final LoginUserType userType;
 
   final InlineSpan? tooltip;
+  final CustomFieldType? fieldType;
+  final List<String>? dropdownItems; // solo per dropdown
 
   const UserFormField({
     required this.keyName,
@@ -36,5 +43,7 @@ class UserFormField {
     this.fieldValidator,
     this.userType = LoginUserType.name,
     this.tooltip,
+    this.fieldType = CustomFieldType.text,
+    this.dropdownItems,
   }) : displayName = displayName ?? keyName;
 }

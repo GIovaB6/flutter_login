@@ -102,6 +102,14 @@ class LoginScreen extends StatelessWidget {
         ),
       ],
       additionalSignupFields: [
+        UserFormField(
+          keyName: 'ruolo',
+          displayName: 'Ruolo',
+          fieldType: CustomFieldType.dropdown,
+          dropdownItems: ['Condomino', 'Ditta'],
+          fieldValidator: (val) =>
+              val == null || val.isEmpty ? 'Seleziona un ruolo' : null,
+        ),
         const UserFormField(
           keyName: 'Username',
           icon: Icon(FontAwesomeIcons.userLarge),
